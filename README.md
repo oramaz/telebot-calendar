@@ -8,7 +8,7 @@ go get github.com/oramaz/telebot-calendar
 
 
 ## Demo
-![](https://github.com/oramaz/telebot-calendar/blob/main/demo.gif)
+![](https://imgur.com/mXRSytC.gif)
 
 # Usage
 Look at the initialization example
