@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	tb "gopkg.in/tucnak/telebot.v3"
+	tb "gopkg.in/telebot.v3"
 )
 
 // NewCalendar builds and returns a Calendar
@@ -28,7 +28,7 @@ func NewCalendar(b *tb.Bot, opt Options) *Calendar {
 
 	return &Calendar{
 		Bot:       b,
-		kb:        tb.InlineKeyboardMarkup{}.InlineKeyboard,
+		kb:        make([][]tb.InlineButton, 0),
 		opt:       &opt,
 		currYear:  opt.InitialYear,
 		currMonth: opt.InitialMonth,
@@ -79,7 +79,7 @@ func (cal *Calendar) GetKeyboard() [][]tb.InlineButton {
 
 // Clears the calendar's keyboard
 func (cal *Calendar) clearKeyboard() {
-	cal.kb = tb.InlineKeyboardMarkup{}.InlineKeyboard
+	cal.kb = make([][]tb.InlineButton, 0)
 }
 
 // Builds a full row width button with a displayed month's name
@@ -87,8 +87,10 @@ func (cal *Calendar) clearKeyboard() {
 func (cal *Calendar) addMonthYearRow() {
 	var row []tb.InlineButton
 
-	btn := tb.InlineButton{Unique: genUniqueParam("month_year_btn"),
-		Text: fmt.Sprintf("%s %v", cal.getMonthDisplayName(cal.currMonth), cal.currYear)}
+	btn := tb.InlineButton{
+		Unique: genUniqueParam("month_year_btn"),
+		Text:   fmt.Sprintf("%s %v", cal.getMonthDisplayName(cal.currMonth), cal.currYear),
+	}
 
 	cal.Bot.Handle(&btn, func(ctx tb.Context) error {
 		cal.Bot.Edit(ctx.Message(), ctx.Message().Text, &tb.ReplyMarkup{
@@ -112,8 +114,10 @@ func (cal *Calendar) getMonthPickKeyboard() [][]tb.InlineButton {
 	// Generating a list of months
 	for i := 1; i <= 12; i++ {
 		monthName := cal.getMonthDisplayName(time.Month(i))
-		monthBtn := tb.InlineButton{Unique: genUniqueParam("month_pick_" + fmt.Sprint(i)),
-			Text: monthName, Data: strconv.Itoa(i)}
+		monthBtn := tb.InlineButton{
+			Unique: genUniqueParam("month_pick_" + fmt.Sprint(i)),
+			Text:   monthName, Data: strconv.Itoa(i),
+		}
 
 		cal.Bot.Handle(&monthBtn, func(ctx tb.Context) error {
 			monthNum, err := strconv.Atoi(ctx.Data())
@@ -185,8 +189,10 @@ func (cal *Calendar) addDaysRows() {
 	// Inserting month's days' buttons
 	for i := 1; i <= amountOfDaysInMonth; i++ {
 		dayText := strconv.Itoa(i)
-		cell := tb.InlineButton{Unique: genUniqueParam("day_" + fmt.Sprint(i)),
-			Text: dayText, Data: dayText}
+		cell := tb.InlineButton{
+			Unique: genUniqueParam("day_" + fmt.Sprint(i)),
+			Text:   dayText, Data: dayText,
+		}
 
 		cal.Bot.Handle(&cell, func(ctx tb.Context) error {
 			dayInt, err := strconv.Atoi(ctx.Data())
